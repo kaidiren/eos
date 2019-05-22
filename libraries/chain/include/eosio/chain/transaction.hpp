@@ -96,6 +96,7 @@ namespace eosio { namespace chain {
                                                      fc::time_point deadline,
                                                      const vector<bytes>& cfd,
                                                      flat_set<public_key_type>& recovered_pub_keys,
+                                                     uint32_t variable_sig_limit,
                                                      bool allow_duplicate_keys = false) const;
 
       uint32_t total_actions()const { return context_free_actions.size() + actions.size(); }
@@ -133,7 +134,7 @@ namespace eosio { namespace chain {
       const signature_type&     sign(const private_key_type& key, const chain_id_type& chain_id);
       signature_type            sign(const private_key_type& key, const chain_id_type& chain_id)const;
       fc::microseconds          get_signature_keys( const chain_id_type& chain_id, fc::time_point deadline,
-                                                    flat_set<public_key_type>& recovered_pub_keys,
+                                                    flat_set<public_key_type>& recovered_pub_keys, uint32_t variable_sig_limit,
                                                     bool allow_duplicate_keys = false )const;
    };
 

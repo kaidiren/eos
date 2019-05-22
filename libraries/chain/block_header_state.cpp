@@ -320,7 +320,7 @@ namespace eosio { namespace chain {
    }
 
    public_key_type block_header_state::signee()const {
-      return fc::crypto::public_key( header.producer_signature, sig_digest(), true );
+      return fc::crypto::public_key( header.producer_signature, sig_digest() );
    }
 
    void block_header_state::verify_signee( const public_key_type& signee )const {

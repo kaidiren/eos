@@ -54,10 +54,10 @@ class transaction_metadata {
       // must be called from main application thread
       static signing_keys_future_type
       start_recover_keys( const transaction_metadata_ptr& mtrx, boost::asio::io_context& thread_pool,
-                          const chain_id_type& chain_id, fc::microseconds time_limit );
+                          const chain_id_type& chain_id, fc::microseconds time_limit, uint32_t variable_sig_limit );
 
       // start_recover_keys must be called first
-      recovery_keys_type recover_keys( const chain_id_type& chain_id );
+      recovery_keys_type recover_keys( const chain_id_type& chain_id, uint32_t variable_sig_limit );
 };
 
 } } // eosio::chain

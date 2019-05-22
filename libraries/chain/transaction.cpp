@@ -95,7 +95,7 @@ digest_type transaction::sig_digest( const chain_id_type& chain_id, const vector
 
 fc::microseconds transaction::get_signature_keys( const vector<signature_type>& signatures,
       const chain_id_type& chain_id, fc::time_point deadline, const vector<bytes>& cfd,
-      flat_set<public_key_type>& recovered_pub_keys, bool allow_duplicate_keys)const
+      flat_set<public_key_type>& recovered_pub_keys, uint32_t variable_sig_limit, bool allow_duplicate_keys)const
 { try {
    using boost::adaptors::transformed;
 
@@ -119,7 +119,7 @@ fc::microseconds transaction::get_signature_keys( const vector<signature_type>& 
       recovery_cache_type::index<by_sig>::type::iterator it = recovery_cache.get<by_sig>().find( sig );
       if( it == recovery_cache.get<by_sig>().end() || it->trx_id != tid ) {
          lock.unlock();
-         recov = public_key_type( sig, digest );
+         recov = public_key_type( sig, digest, variable_sig_limit);
          fc::microseconds cpu_usage = fc::time_point::now() - start;
          lock.lock();
          recovery_cache.emplace_back( cached_pub_key{tid, recov, sig, cpu_usage} ); //could fail on dup signatures; not a problem
@@ -195,10 +195,10 @@ signature_type signed_transaction::sign(const private_key_type& key, const chain
 
 fc::microseconds
 signed_transaction::get_signature_keys( const chain_id_type& chain_id, fc::time_point deadline,
-                                        flat_set<public_key_type>& recovered_pub_keys,
+                                        flat_set<public_key_type>& recovered_pub_keys, uint32_t variable_sig_limit,
                                         bool allow_duplicate_keys)const
 {
-   return transaction::get_signature_keys(signatures, chain_id, deadline, context_free_data, recovered_pub_keys, allow_duplicate_keys);
+   return transaction::get_signature_keys(signatures, chain_id, deadline, context_free_data, recovered_pub_keys, variable_sig_limit, allow_duplicate_keys);
 }
 
 uint32_t packed_transaction::get_unprunable_size()const {
