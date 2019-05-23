@@ -1899,7 +1899,7 @@ void read_write::push_transaction(const read_write::push_transaction_params& par
       transaction_metadata_ptr ptrx;
       try {
          abi_serializer::from_variant(params, *pretty_input, resolver, abi_serializer_max_time);
-         ptrx = std::make_shared<transaction_metadata>( pretty_input );
+         ptrx = std::make_shared<transaction_metadata>( pretty_input, db.current_subjective_signature_length_limit() );
       } EOS_RETHROW_EXCEPTIONS(chain::packed_transaction_type_exception, "Invalid packed transaction")
 
       app().get_method<incoming::methods::transaction_async>()(ptrx, true, [this, next](const fc::static_variant<fc::exception_ptr, transaction_trace_ptr>& result) -> void{
@@ -2015,7 +2015,7 @@ void read_write::send_transaction(const read_write::send_transaction_params& par
       transaction_metadata_ptr ptrx;
       try {
          abi_serializer::from_variant(params, *pretty_input, resolver, abi_serializer_max_time);
-         ptrx = std::make_shared<transaction_metadata>( pretty_input );
+         ptrx = std::make_shared<transaction_metadata>( pretty_input, db.current_subjective_signature_length_limit() );
       } EOS_RETHROW_EXCEPTIONS(chain::packed_transaction_type_exception, "Invalid packed transaction")
 
       app().get_method<incoming::methods::transaction_async>()(ptrx, true, [this, next](const fc::static_variant<fc::exception_ptr, transaction_trace_ptr>& result) -> void{

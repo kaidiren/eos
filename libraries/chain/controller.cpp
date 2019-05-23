@@ -1040,7 +1040,8 @@ struct controller_impl {
              || (code == contract_whitelist_exception::code_value)
              || (code == contract_blacklist_exception::code_value)
              || (code == action_blacklist_exception::code_value)
-             || (code == key_blacklist_exception::code_value);
+             || (code == key_blacklist_exception::code_value)
+             || (code == sig_variable_size_limit_exception::code_value);
    }
 
    bool scheduled_failure_is_subjective( const fc::exception& e ) const {
@@ -1079,7 +1080,7 @@ struct controller_impl {
 
       signed_transaction dtrx;
       fc::raw::unpack(ds,static_cast<transaction&>(dtrx) );
-      transaction_metadata_ptr trx = std::make_shared<transaction_metadata>( dtrx );
+      transaction_metadata_ptr trx = std::make_shared<transaction_metadata>( dtrx, self.current_subjective_signature_length_limit() );
       trx->accepted = true;
       trx->scheduled = true;
 
@@ -1489,7 +1490,7 @@ struct controller_impl {
          }
 
          try {
-            auto onbtrx = std::make_shared<transaction_metadata>( get_on_block_transaction() );
+            auto onbtrx = std::make_shared<transaction_metadata>( get_on_block_transaction(), self.current_subjective_signature_length_limit() );
             onbtrx->implicit = true;
             auto reset_in_trx_requiring_checks = fc::make_scoped_exit([old_value=in_trx_requiring_checks,this](){
                   in_trx_requiring_checks = old_value;
@@ -1692,7 +1693,7 @@ struct controller_impl {
          for( const auto& receipt : b->transactions ) {
             if( receipt.trx.contains<packed_transaction>()) {
                auto& pt = receipt.trx.get<packed_transaction>();
-               auto mtrx = std::make_shared<transaction_metadata>( std::make_shared<packed_transaction>( pt ) );
+               auto mtrx = std::make_shared<transaction_metadata>( std::make_shared<packed_transaction>( pt ), self.current_subjective_signature_length_limit() );
                if( !self.skip_auth_check() ) {
                   transaction_metadata::start_recover_keys( mtrx, thread_pool.get_executor(), chain_id, microseconds::maximum(), self.current_subjective_signature_length_limit() );
                }
