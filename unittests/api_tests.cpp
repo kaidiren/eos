@@ -210,7 +210,7 @@ transaction_trace_ptr CallAction(TESTER& test, T ac, const vector<account_name>&
    test.set_transaction_headers(trx);
    auto sigs = trx.sign(test.get_private_key(scope[0], "active"), test.control->get_chain_id());
    flat_set<public_key_type> keys;
-   trx.get_signature_keys(test.control->get_chain_id(), fc::time_point::maximum(), keys, UINT32_MAX);
+   trx.get_signature_keys(test.control->get_chain_id(), fc::time_point::maximum(), keys);
    auto res = test.push_transaction(trx);
    BOOST_CHECK_EQUAL(res->receipt->status, transaction_receipt::executed);
    test.produce_block();
@@ -236,7 +236,7 @@ transaction_trace_ptr CallFunction(TESTER& test, T ac, const vector<char>& data,
       auto sigs = trx.sign(test.get_private_key(scope[0], "active"), test.control->get_chain_id());
 
       flat_set<public_key_type> keys;
-      trx.get_signature_keys(test.control->get_chain_id(), fc::time_point::maximum(), keys, UINT32_MAX);
+      trx.get_signature_keys(test.control->get_chain_id(), fc::time_point::maximum(), keys);
 
       auto res = test.push_transaction(trx, fc::time_point::maximum(), TESTER::DEFAULT_BILLED_CPU_TIME_US, no_throw);
       if (!no_throw) {
@@ -877,7 +877,7 @@ void call_test(TESTER& test, T ac, uint32_t billed_cpu_time_us , uint32_t max_cp
    test.set_transaction_headers(trx);
    auto sigs = trx.sign(test.get_private_key(N(testapi), "active"), test.control->get_chain_id());
    flat_set<public_key_type> keys;
-   trx.get_signature_keys(test.control->get_chain_id(), fc::time_point::maximum(), keys, UINT32_MAX);
+   trx.get_signature_keys(test.control->get_chain_id(), fc::time_point::maximum(), keys);
    auto res = test.push_transaction( trx, fc::time_point::now() + fc::milliseconds(max_cpu_usage_ms), billed_cpu_time_us );
    BOOST_CHECK_EQUAL(res->receipt->status, transaction_receipt::executed);
    test.produce_block();

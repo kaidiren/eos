@@ -2788,7 +2788,7 @@ namespace eosio {
          }
          chain::public_key_type peer_key;
          try {
-            peer_key = crypto::public_key(msg.sig, msg.token, 1024u);
+            peer_key = crypto::public_key(msg.sig, msg.token, true);
          }
          catch (fc::exception& /*e*/) {
             fc_elog( logger, "Peer ${peer} sent a handshake with an unrecoverable key.", ("peer", msg.p2p_address) );

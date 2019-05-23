@@ -741,7 +741,7 @@ class crypto_api : public context_aware_api {
          EOS_ASSERT(p.which() < context.db.get<protocol_state_object>().num_supported_key_types, unactivated_key_type,
            "Unactivated key type used when creating assert_recover_key");
 
-         auto check = fc::crypto::public_key( s, digest, UINT32_MAX, false );
+         auto check = fc::crypto::public_key( s, digest, false );
          EOS_ASSERT( check == p, crypto_api_exception, "Error expected key different than recovered key" );
       }
 
@@ -757,7 +757,7 @@ class crypto_api : public context_aware_api {
          EOS_ASSERT(s.which() < context.db.get<protocol_state_object>().num_supported_key_types, unactivated_signature_type,
            "Unactivated signature type used during recover_key");
 
-         fc::raw::pack( pubds, fc::crypto::public_key( s, digest, UINT32_MAX, false ) );
+         fc::raw::pack( pubds, fc::crypto::public_key( s, digest, false ) );
          return pubds.tellp();
       }
 

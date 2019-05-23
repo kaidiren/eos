@@ -4,7 +4,7 @@
 
 namespace eosio { namespace chain {
 
-recovery_keys_type transaction_metadata::recover_keys( const chain_id_type& chain_id, uint32_t variable_sig_limit ) {
+recovery_keys_type transaction_metadata::recover_keys( const chain_id_type& chain_id ) {
    // Unlikely for more than one chain_id to be used in one nodeos instance
    if( signing_keys_future.valid() ) {
       const std::tuple<chain_id_type, fc::microseconds, flat_set<public_key_type>>& sig_keys = signing_keys_future.get();
@@ -17,7 +17,7 @@ recovery_keys_type transaction_metadata::recover_keys( const chain_id_type& chai
    std::promise<signing_keys_future_value_type> p;
    flat_set<public_key_type> recovered_pub_keys;
    const signed_transaction& trn = packed_trx->get_signed_transaction();
-   fc::microseconds cpu_usage = trn.get_signature_keys( chain_id, fc::time_point::maximum(), recovered_pub_keys, variable_sig_limit );
+   fc::microseconds cpu_usage = trn.get_signature_keys( chain_id, fc::time_point::maximum(), recovered_pub_keys );
    p.set_value( std::make_tuple( chain_id, cpu_usage, std::move( recovered_pub_keys ) ) );
    signing_keys_future = p.get_future().share();
 
@@ -28,14 +28,13 @@ recovery_keys_type transaction_metadata::recover_keys( const chain_id_type& chai
 signing_keys_future_type transaction_metadata::start_recover_keys( const transaction_metadata_ptr& mtrx,
                                                                    boost::asio::io_context& thread_pool,
                                                                    const chain_id_type& chain_id,
-                                                                   fc::microseconds time_limit,
-                                                                   uint32_t variable_sig_limit )
+                                                                   fc::microseconds time_limit )
 {
    if( mtrx->signing_keys_future.valid() && std::get<0>( mtrx->signing_keys_future.get() ) == chain_id ) // already created
       return mtrx->signing_keys_future;
 
    std::weak_ptr<transaction_metadata> mtrx_wp = mtrx;
-   mtrx->signing_keys_future = async_thread_pool( thread_pool, [time_limit, chain_id, mtrx_wp, variable_sig_limit]() {
+   mtrx->signing_keys_future = async_thread_pool( thread_pool, [time_limit, chain_id, mtrx_wp]() {
       fc::time_point deadline = time_limit == fc::microseconds::maximum() ?
                                 fc::time_point::maximum() : fc::time_point::now() + time_limit;
       auto mtrx = mtrx_wp.lock();
@@ -43,7 +42,7 @@ signing_keys_future_type transaction_metadata::start_recover_keys( const transac
       flat_set<public_key_type> recovered_pub_keys;
       if( mtrx ) {
          const signed_transaction& trn = mtrx->packed_trx->get_signed_transaction();
-         cpu_usage = trn.get_signature_keys( chain_id, deadline, recovered_pub_keys, variable_sig_limit );
+         cpu_usage = trn.get_signature_keys( chain_id, deadline, recovered_pub_keys );
       }
       return std::make_tuple( chain_id, cpu_usage, std::move( recovered_pub_keys ));
    } );
