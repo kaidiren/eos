@@ -61,6 +61,7 @@ steps:
         modify-ram: 24
         always-pull: true
         debug: true
+        anka-debug: true
         wait-network: true
     agents:
       - "queue=mac-anka-large-node-fleet"
@@ -167,6 +168,7 @@ steps:
         vm-name: $ANKA_MOJAVE_TEMPLATE
         vm-registry-tag: "${ANKA_TEMPLATE_TAG}::${MAC_TAG}"
         always-pull: true
+        anka-debug: true
         debug: true
         wait-network: true
     timeout: 120
@@ -189,6 +191,7 @@ steps:
         vm-name: $ANKA_MOJAVE_TEMPLATE
         vm-registry-tag: "${ANKA_TEMPLATE_TAG}::${MAC_TAG}"
         always-pull: true
+        anka-debug: true
         debug: true
         wait-network: true
     timeout: 120
