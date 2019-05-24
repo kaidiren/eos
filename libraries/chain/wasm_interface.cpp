@@ -741,6 +741,10 @@ class crypto_api : public context_aware_api {
          EOS_ASSERT(p.which() < context.db.get<protocol_state_object>().num_supported_key_types, unactivated_key_type,
            "Unactivated key type used when creating assert_recover_key");
 
+         if(context.control.is_producing_block())
+            EOS_ASSERT(s.variable_size() <= context.control.configured_subjective_signature_length_limit(),
+                       sig_variable_size_limit_exception, "signature variable length component size greater than subjective maximum");
+
          auto check = fc::crypto::public_key( s, digest, false );
          EOS_ASSERT( check == p, crypto_api_exception, "Error expected key different than recovered key" );
       }
@@ -756,6 +760,10 @@ class crypto_api : public context_aware_api {
 
          EOS_ASSERT(s.which() < context.db.get<protocol_state_object>().num_supported_key_types, unactivated_signature_type,
            "Unactivated signature type used during recover_key");
+
+         if(context.control.is_producing_block())
+            EOS_ASSERT(s.variable_size() <= context.control.configured_subjective_signature_length_limit(),
+                       sig_variable_size_limit_exception, "signature variable length component size greater than subjective maximum");
 
          fc::raw::pack( pubds, fc::crypto::public_key( s, digest, false ) );
          return pubds.tellp();

@@ -2515,7 +2515,7 @@ namespace eosio {
          return;
       }
 
-      auto ptrx = std::make_shared<transaction_metadata>( trx, cc.current_subjective_signature_length_limit() );
+      auto ptrx = std::make_shared<transaction_metadata>( trx, cc.configured_subjective_signature_length_limit() );
       const auto& tid = ptrx->id;
 
       if(local_txns.get<by_id>().find(tid) != local_txns.end()) {

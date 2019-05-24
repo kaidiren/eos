@@ -1080,7 +1080,7 @@ struct controller_impl {
 
       signed_transaction dtrx;
       fc::raw::unpack(ds,static_cast<transaction&>(dtrx) );
-      transaction_metadata_ptr trx = std::make_shared<transaction_metadata>( dtrx, self.current_subjective_signature_length_limit() );
+      transaction_metadata_ptr trx = std::make_shared<transaction_metadata>( dtrx );
       trx->accepted = true;
       trx->scheduled = true;
 
@@ -1490,7 +1490,7 @@ struct controller_impl {
          }
 
          try {
-            auto onbtrx = std::make_shared<transaction_metadata>( get_on_block_transaction(), self.current_subjective_signature_length_limit() );
+            auto onbtrx = std::make_shared<transaction_metadata>( get_on_block_transaction() );
             onbtrx->implicit = true;
             auto reset_in_trx_requiring_checks = fc::make_scoped_exit([old_value=in_trx_requiring_checks,this](){
                   in_trx_requiring_checks = old_value;
@@ -1693,7 +1693,7 @@ struct controller_impl {
          for( const auto& receipt : b->transactions ) {
             if( receipt.trx.contains<packed_transaction>()) {
                auto& pt = receipt.trx.get<packed_transaction>();
-               auto mtrx = std::make_shared<transaction_metadata>( std::make_shared<packed_transaction>( pt ), self.current_subjective_signature_length_limit() );
+               auto mtrx = std::make_shared<transaction_metadata>( std::make_shared<packed_transaction>( pt ) );
                if( !self.skip_auth_check() ) {
                   transaction_metadata::start_recover_keys( mtrx, thread_pool.get_executor(), chain_id, microseconds::maximum() );
                }
@@ -2934,8 +2934,8 @@ bool controller::is_ram_billing_in_notify_allowed()const {
    return my->conf.disable_all_subjective_mitigations || !is_producing_block() || my->conf.allow_ram_billing_in_notify;
 }
 
-uint32_t controller::current_subjective_signature_length_limit()const {
-   return (my->conf.disable_all_subjective_mitigations || !is_producing_block()) ? UINT32_MAX : my->conf.maximum_variable_signature_length;
+uint32_t controller::configured_subjective_signature_length_limit()const {
+   return my->conf.maximum_variable_signature_length;
 }
 
 void controller::validate_expiration( const transaction& trx )const { try {
