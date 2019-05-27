@@ -2,6 +2,7 @@ FROM eosio/builder as builder
 ARG branch=master
 ARG symbol=EOS
 
+RUN chmod 777 -R /tmp
 RUN apt-get update -y && apt-get install -y libuv1 libjemalloc1
 RUN wget http://downloads.datastax.com/cpp-driver/ubuntu/18.04/cassandra/v2.11.0/cassandra-cpp-driver_2.11.0-1_amd64.deb
 RUN apt-get install ./cassandra-cpp-driver_2.11.0-1_amd64.deb -y
