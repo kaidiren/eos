@@ -18,3 +18,6 @@
 [submodule "libraries/yubihsm"]
 	path = libraries/yubihsm
 	url = https://github.com/Yubico/yubihsm-shell
+[submodule "plugins/cassandra_history_plugin"]
+	path = plugins/cassandra_history_plugin
+	url = https://github.com/atticlab/cassandra_history_plugin.git
