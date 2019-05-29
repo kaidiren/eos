@@ -75,9 +75,11 @@ RUN git clone -b $branch https://github.com/kaidiren/eos_with_scylladb_cassandra
     && cmake --build /tmp/build --target install
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install openssl ca-certificates && rm -rf /var/lib/apt/lists/*
-COPY /tmp/build/bin /opt/eosio/bin
-COPY /eos/Docker/config.ini /
-COPY /eos/Docker/nodeosd.sh /opt/eosio/bin/nodeosd.sh
+RUN mkdir -p /opt/eosio/bin
+RUN cp -r /tmp/build/bin /opt/eosio
+RUN cp -r /eos/Docker/config.ini /
+RUN cp -r /eos/Docker/nodeosd.sh /opt/eosio/bin/nodeosd.sh
+RUN rm -rf /tmp/build && rm -rf /eos
 ENV EOSIO_ROOT=/opt/eosio
 RUN chmod +x /opt/eosio/bin/nodeosd.sh
 ENV LD_LIBRARY_PATH /usr/local/lib
